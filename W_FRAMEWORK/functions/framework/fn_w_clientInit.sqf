@@ -50,8 +50,26 @@ switch _mode do {
 		if (_logFF) then {
 			player addEventHandler ["Hit",{
 				params ["_target","_shooter","_damage"];
-				if (isPlayer _shooter && side _shooter == side _target) then {
-					(format ["W_LOG_FRIENLDYFIRE: %1",name _shooter]) remoteExecCall ["diag_log",0];
+				if (isPlayer _shooter && {side _shooter == side _target} && {_shooter != _target}) then {
+                    private ["_vicShooter", "_vicTarget"];
+                    _vicShooter = "kein Fahrzeug";
+                    _vicTarget = "kein Fahrzeug";
+                    if (vehicle _shooter != _shooter) then {
+                        _vicShooter = getText (configFile >> "CfgVehicles" >> (typeOf vehicle _shooter) >> "displayName");
+                    };
+                    if (vehicle _target != _target) then {
+                        _vicTarget = getText (configFile >> "CfgVehicles" >> (typeOf vehicle _target) >> "displayName");
+                    };
+					(format [
+                        "W_LOG_FRIENLDYFIRE: %1 (%6) %2 feuerte auf %3 (%7) %4 auf einer Distanz von %5m",
+                        name _shooter,
+                        getPosASL _shooter,
+                        name _target,
+                        getPosASL _target,
+                        _shooter distance _target,
+                        _vicShooter,
+                        _vicTarget
+                    ]) remoteExecCall ["diag_log",0];
 				};
 			}];
 		};
